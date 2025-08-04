@@ -57,5 +57,5 @@ jobs:
           helm pull $CHART_NAME/$CHART_NAME --version $VERSION
 
           REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
-          helm chart save $CHART_NAME-$VERSION.tgz oci://$REGISTRY/kyverno-chart:$VERSION
-          helm chart push oci://$REGISTRY/kyverno-chart:$VERSION
+          helm push $CHART_NAME-$VERSION.tgz oci://$REGISTRY/kyverno-chart
+
