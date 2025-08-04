@@ -1,11 +1,6 @@
-"repos": {
-      "kyverno-chart": {
-        "helm_repo": "kyverno",
-        "chart": "kyverno",
-        "versions": [
-          "3.3.7"
-        ]
-      }
-    }
-
+ {
+    "chart": "kyverno",
+    "version": "3.3.7",
+    "helm_repo": "https://kyverno.github.io/kyverno/"
+  }
 
