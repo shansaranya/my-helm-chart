@@ -44,22 +44,21 @@ jobs:
         run: |
           set -e
 
-          CHART_NAME=$(jq -r '.[0].chart' charts.json)
-          VERSION=$(jq -r '.[0].version' charts.json)
-          REPO_URL=$(jq -r '.[0].helm_repo' charts.json)
+         CHART_NAME=$(jq -r '.[0].chart' charts.json)
+         VERSION=$(jq -r '.[0].version' charts.json)
+         REPO_URL=$(jq -r '.[0].helm_repo' charts.json)
 
+         echo "Chart: $CHART_NAME"
+         echo "Version: $VERSION"
+         echo "Helm Repo: $REPO_URL"
 
-          echo "Chart: $CHART_NAME"
-          echo "Version: $VERSION"
-          echo "Helm Repo: $REPO_URL"
+         helm repo add $CHART_NAME $REPO_URL
+         helm repo update
 
-          # Add and update Helm repo
-          helm repo add $CHART_NAME $REPO_URL
-          helm repo update
+         helm pull $CHART_NAME/$CHART_NAME --version $VERSION
 
-          # Pull the specific chart version
-          helm pull $CHART_NAME/$CHART_NAME --version $VERSION
+         REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
 
-          # Push to your ECR registry via OCI
-          REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
-          helm push $CHART_NAME-$VERSION.tgz oci://$REGISTRY/kyverno-chart
+         helm chart save $CHART_NAME-$VERSION.tgz oci://$REGISTRY/kyverno-chart:$VERSION
+         helm chart push oci://$REGISTRY/kyverno-chart:$VERSION
+         
