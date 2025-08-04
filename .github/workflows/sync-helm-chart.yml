@@ -44,7 +44,7 @@ jobs:
         run: |
           set -e
 
-          export PATH="/opt/hostedtoolcache/helm/3.14.3/x64/linux-amd64:$PATH"
+          export PATH="/opt/hostedtoolcache/helm/3.15.2/x64/linux-amd64:$PATH"
           helm version
           which helm
 
@@ -75,6 +75,6 @@ jobs:
           fi
 
           echo "Pushing $CHART_TGZ to oci://$REGISTRY/$SAFE_REPO_NAME"
-          helm push oci://$REGISTRY/$REPO_NAME:$VERSION
+          helm push $CHART_TGZ oci://$REGISTRY/$REPO_NAME:$VERSION
 
 
