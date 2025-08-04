@@ -75,5 +75,7 @@ jobs:
           fi
 
           echo "Pushing $CHART_TGZ to oci://$REGISTRY/$SAFE_REPO_NAME"
-          helm push $CHART_TGZ oci://$REGISTRY/$SAFE_REPO_NAME
+          helm chart save $CHART_TGZ oci://$REGISTRY/$REPO_NAME:$VERSION
+          helm chart push oci://$REGISTRY/$REPO_NAME:$VERSION
+
 
