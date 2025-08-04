@@ -44,9 +44,10 @@ jobs:
         run: |
           set -e
 
-          CHART_NAME=$(jq -r '.[0].name' charts.json)
+          CHART_NAME=$(jq -r '.[0].chart' charts.json)
           VERSION=$(jq -r '.[0].version' charts.json)
-          REPO_URL=$(jq -r '.[0].url' charts.json)
+          REPO_URL=$(jq -r '.[0].helm_repo' charts.json)
+
 
           echo "Chart: $CHART_NAME"
           echo "Version: $VERSION"
