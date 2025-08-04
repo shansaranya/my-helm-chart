@@ -74,5 +74,5 @@ jobs:
             echo "ECR repository $REPO_NAME exists."
           fi
 
-          helm chart save $CHART_TGZ $OCI_REF
-          helm chart push $OCI_REF
+          helm push $CHART_TGZ oci://$REGISTRY/$REPO_NAME
+
