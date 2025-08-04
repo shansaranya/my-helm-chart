@@ -28,18 +28,39 @@ jobs:
         with:
           version: v3.13.0
 
-      - name: Login to ECR
+      - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Pull and Push Helm Chart to ECR
+      - name: Configure Helm OCI Credential Helper for ECR
         run: |
+          mkdir -p ~/.config/helm
+          cat <<EOF > ~/.config/helm/registry.json
+          {
+            "credHelpers": {
+              "545217747931.dkr.ecr.us-east-1.amazonaws.com": "ecr-login"
+            }
+          }
+          EOF
+
+      - name: Pull and Push Helm Chart to ECR (OCI)
+        run: |
+          set -e
+
           CHART_NAME=$(jq -r '.[0].name' charts.json)
           VERSION=$(jq -r '.[0].version' charts.json)
-          REPO_URL=$(jq -r '.[0].url' repos.json)
+          REPO_URL=$(jq -r '.[0].url' charts.json)
 
+          echo "Chart: $CHART_NAME"
+          echo "Version: $VERSION"
+          echo "Helm Repo: $REPO_URL"
+
+          # Add and update Helm repo
           helm repo add $CHART_NAME $REPO_URL
           helm repo update
+
+          # Pull the specific chart version
           helm pull $CHART_NAME/$CHART_NAME --version $VERSION
-          
-          REGISTRY=$(aws ecr describe-registry --query "registryId" --output text).dkr.ecr.us-east-1.amazonaws.com
+
+          # Push to your ECR registry via OCI
+          REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
           helm push $CHART_NAME-$VERSION.tgz oci://$REGISTRY/helm-charts
