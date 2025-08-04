@@ -60,7 +60,7 @@ jobs:
           helm pull $CHART_NAME/$CHART_NAME --version $VERSION
 
           REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
-          REPO_NAME="kyverno-chart"
+          REPO_NAME="kyverno"
           CHART_TGZ="$CHART_NAME-$VERSION.tgz"
           OCI_REF="oci://$REGISTRY/$REPO_NAME/$CHART_NAME:$VERSION"
 
