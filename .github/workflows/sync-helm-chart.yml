@@ -44,7 +44,6 @@ jobs:
         run: |
           set -e
 
-          # Ensure the correct Helm binary is used
           export PATH="/opt/hostedtoolcache/helm/3.14.3/x64/linux-amd64:$PATH"
           helm version
           which helm
@@ -66,15 +65,20 @@ jobs:
           REPO_NAME="kyverno"
           CHART_TGZ="$CHART_NAME-$VERSION.tgz"
 
-          # Replace dots with dashes for valid OCI tag
+          # Sanitize version and repo/chart names
           SAFE_VERSION="${VERSION//./-}"
-          OCI_REF="oci://$REGISTRY/$REPO_NAME:$SAFE_VERSION"
+          SAFE_REPO_NAME=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
+          SAFE_CHART_NAME=$(echo "$CHART_NAME" | tr '[:upper:]' '[:lower:]')
 
-          if ! aws ecr describe-repositories --repository-names $REPO_NAME --region us-east-1 > /dev/null 2>&1; then
-            echo "ECR repository $REPO_NAME not found. Creating..."
-            aws ecr create-repository --repository-name $REPO_NAME --region us-east-1
+          OCI_REF="oci://$REGISTRY/$SAFE_REPO_NAME:$SAFE_VERSION"
+
+          if ! aws ecr describe-repositories --repository-names $SAFE_REPO_NAME --region us-east-1 > /dev/null 2>&1; then
+            echo "ECR repository $SAFE_REPO_NAME not found. Creating..."
+            aws ecr create-repository --repository-name $SAFE_REPO_NAME --region us-east-1
           else
-            echo "ECR repository $REPO_NAME exists."
+            echo "ECR repository $SAFE_REPO_NAME exists."
           fi
 
+          echo "Using OCI ref: $OCI_REF"
           helm push $CHART_TGZ $OCI_REF
+
