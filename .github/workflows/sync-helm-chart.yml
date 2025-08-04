@@ -65,7 +65,10 @@ jobs:
           REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
           REPO_NAME="kyverno"
           CHART_TGZ="$CHART_NAME-$VERSION.tgz"
-          OCI_REF="oci://$REGISTRY/$REPO_NAME:$VERSION"
+
+          # Replace dots with dashes for valid OCI tag
+          SAFE_VERSION="${VERSION//./-}"
+          OCI_REF="oci://$REGISTRY/$REPO_NAME:$SAFE_VERSION"
 
           if ! aws ecr describe-repositories --repository-names $REPO_NAME --region us-east-1 > /dev/null 2>&1; then
             echo "ECR repository $REPO_NAME not found. Creating..."
@@ -75,5 +78,3 @@ jobs:
           fi
 
           helm push $CHART_TGZ $OCI_REF
-
-
