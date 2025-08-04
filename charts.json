@@ -1,6 +1,11 @@
-[
-  {
-    "name": "kyverno",
-    "version": "3.1.5"
-  }
-]
+"repos": {
+      "kyverno-chart": {
+        "helm_repo": "kyverno",
+        "chart": "kyverno",
+        "versions": [
+          "3.3.7"
+        ]
+      }
+    }
+
+
