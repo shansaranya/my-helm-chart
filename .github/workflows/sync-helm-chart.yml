@@ -44,6 +44,11 @@ jobs:
         run: |
           set -e
 
+          # Ensure the correct Helm binary is used
+          export PATH="/opt/hostedtoolcache/helm/3.14.3/x64/linux-amd64:$PATH"
+          helm version
+          which helm
+
           CHART_NAME=$(jq -r '.[0].chart' charts.json)
           VERSION=$(jq -r '.[0].version' charts.json)
           REPO_URL=$(jq -r '.[0].helm_repo' charts.json)
@@ -52,11 +57,9 @@ jobs:
           echo "Version: $VERSION"
           echo "Helm Repo: $REPO_URL"
 
-          # Add and update Helm repo
           helm repo add $CHART_NAME $REPO_URL
           helm repo update
 
-          # Pull the specified chart version
           helm pull $CHART_NAME/$CHART_NAME --version $VERSION
 
           REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
@@ -64,7 +67,6 @@ jobs:
           CHART_TGZ="$CHART_NAME-$VERSION.tgz"
           OCI_REF="oci://$REGISTRY/$REPO_NAME/$CHART_NAME:$VERSION"
 
-          # Create ECR repo if it doesn't exist
           if ! aws ecr describe-repositories --repository-names $REPO_NAME --region us-east-1 > /dev/null 2>&1; then
             echo "ECR repository $REPO_NAME not found. Creating..."
             aws ecr create-repository --repository-name $REPO_NAME --region us-east-1
@@ -72,6 +74,5 @@ jobs:
             echo "ECR repository $REPO_NAME exists."
           fi
 
-          # Save and push Helm chart as OCI artifact
           helm chart save $CHART_TGZ $OCI_REF
           helm chart push $OCI_REF
