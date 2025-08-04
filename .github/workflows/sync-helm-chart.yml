@@ -1,9 +1,7 @@
 name: Sync Helm Chart
 
 on:
-  push:
-    paths:
-      - charts.json
+  workflow_dispatch:
 
 jobs:
   sync-chart:
