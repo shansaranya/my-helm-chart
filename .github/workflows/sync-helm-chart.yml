@@ -62,4 +62,4 @@ jobs:
 
           # Push to your ECR registry via OCI
           REGISTRY="545217747931.dkr.ecr.us-east-1.amazonaws.com"
-          helm push $CHART_NAME-$VERSION.tgz oci://$REGISTRY/helm-charts
+          helm push $CHART_NAME-$VERSION.tgz oci://$REGISTRY/kyverno-chart
